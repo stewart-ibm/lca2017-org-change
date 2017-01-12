@@ -1,0 +1,588 @@
+#!/usr/bin/env pinpoint
+
+[text-align=center]
+[duration=35.000000]
+-- [duration=40.502426]
+Organizational Change:
+Challenges in shipping open source firmware
+
+<span font="35px">
+Stewart Smith
+OPAL Architect, IBM
+stewart@linux.vnet.ibm.com
+@stewartsmith
+</span>
+# - Hi, I'm Stewart
+# - Currently at IBM.
+# - OPAL Architect, that is, OpenPower Firmware
+# - OPAL - OpenPower Abstraction Layer
+# Last year, Italked about the contents of what's in a firmware image, how we boot and other such fun.
+#
+# This year, I'm talking about how we got to there, and how we've been going with doing some organisational change.
+
+-- [duration=31.960657]
+Change is inevitable.
+# You change and thrive, or the world changes and you perish.
+#
+# Netflix used to rent out DVDs.
+# So did Blockbuster.
+#
+# We've had some pretty significant change in our part of IBM over  the past few years. That's the Systems Group, specifically POWER systems.
+
+-- [duration=3.119327]
+IBM is big.
+
+-- [duration=6.760485]
+IBM is really big.
+
+<span font="20px">
+
+(I mean, you may think it's a long way down the street to the
+chemist but that pales in comparison to how big IBM is.)
+</span>
+
+-- [duration=48.135529]
+It's twice the size of Hobart.
+# I've worked for a variety of company sizes
+# <100, 100s, 10,000s, now 100,000s
+#
+# Lessons and methods apply equally.
+
+-- [text-align=left] [duration=36.017231]
+"If you could get all the people in an organization
+rowing in the same direction, you could dominate any
+industry, in any market, against any competition,
+at any time"
+
+<span font="35px">
+			     - <b>The Five Dysfunctions of a Team: A Leadership Fable</b>
+			       <i>by Patrick M. Lencioni</i>
+</span>
+# This quote (from a book I recommend to anyone working in any team) is insightful and casually depressing
+# Of course, achieving this basically impossible.
+# But the closer you get, the better things go.
+
+-- [text-align=left] [duration=17.133570]
+"If we express our needs, we have a better
+chance of getting them met."
+
+  - <b>Nonviolent Communication: A language of Life</b>
+    <i>Marshall B. Rosenberg and Arun Gandhi</i>
+# Also on the homework reading list.
+# Yes, this talk comes with homework.
+
+-- [duration=27.744534]
+Why talk about organizational change?
+# Basically... you essentially never get to create an organisation or team
+# from scratch. More likely, you're going to be changing an one.
+#
+# Even if you *do* create a team/org from scratch, it's unlikely to be
+# perfect from the start.
+#
+# and the world is going to change. Especially if you're trying to change it.
+#
+# Anyway, let's get to our story.
+
+-- [s812lc.jpg] [bottom] [duration=39.711819]
+OpenPOWER
+# Our story starts with a computer.
+# This is an IBM one.
+# It's an OpenPOWER system, with an open source firmware stack.
+#
+# (Well, except for the BMC... but there's OpenBMC, which I'll mention later)
+#
+# We shipped our first such machine in October 2015.
+#
+# Both IBM and partners have shipped many machines like this since then.
+#
+# This is the story of how we got to there and how we got to now.
+#
+# But the road to this machine starts a little earlier
+
+-- [s822l.jpg] [bottom] [duration=39.753685]
+KVM on POWER
+# But our journey starts elsewhere
+# In order to get KVM to run on POWER, some changes were needed.
+#
+# IBM traditionally shipped a proprietary hypervisor
+# Linux ran as a guest.
+# nested virtual machines aren't great.
+#
+# Enter OPAL and OpenPOWER.
+#
+# First *product* the Linux Technology Center was involved in.
+#
+# A machine you could order!
+#
+# It ran linux on the bare metal, could use KVM.
+#
+# At the same time.....
+
+-- [Openpower-logo-wht-bg_logo-wht-bg.jpg] [duration=26.511786]
+
+# opening up the POWER architecture could open it into other markets.
+#
+# OpenPOWER was born. An idea to have more industry-standard machines,
+# license everything, let others innovate too.
+
+-- [Barreleye.jpg] [bottom] [duration=25.949015]
+OpenPOWER
+# Machines like this one. OpenCompute OpenPOWER, Barreleye.
+#
+# Big executive backing to have OpenPOWER succeed.
+#
+# Strategic.
+
+-- [duration=82.718719]
+Strategy != Tactic
+# tactics are the actual means used to gain an objective
+# Strategy overall campaign plan, used to achieve Vision.
+#
+# OpenPOWER is strategy
+# Many tactics. Some are going to work, some aren't.
+#
+# If something you want to do is a tactic to help achieve a strategic
+#direction, connecting the two and reasoning why is going to help
+#gain allies.
+#
+#So. New CPU, new firmware, eventually, very new looking machines.
+#What's the most important thing?
+
+-- [duration=68.278053]
+☑ Ship it.
+# Real artists ship.
+# We did. Mid 2014.
+#
+# We didn't go for our first thing out the door to be the ideal machine
+# for OpenPOWER. Nothing successful has shipped 1.0 being perfect.
+#
+# A POWER machine, same as the big iron and all the proprietary stack,
+# Chopped out the PowerVM proprietary hypervisor,
+# added in OPAL.
+# So you could run Linux on "bare metal" rather than under IBM proprietary hypervisor.
+#
+# The journey from this to our first OpenPOWER machine (more industry
+# standards) was rather short. A year.
+#
+# But with this first GA, seed was sown.
+
+-- [duration=18.905586]
+☑ Release Source Code
+# Open sourcing everything is easier than doing contracts.
+
+-- [duration=12.908413]
+git push
+# and you're done?
+
+-- [text-align=left] [duration=159.551086]
+<span font="40px">
+Hostboot:		~400,000 LoC
+OCC:	    	~70,000 LoC
+skiboot:		~70,000 LoC
+<span font="30px">
+plus buildroot, linux, busybox, petitboot.....</span>
+</span>
+# different teams.
+# Needed to ensure they're on board and happy that things are going to work.
+#
+# Hostboot is actually many teams. Hardware procedures are from hardware,
+# other bits from firmware team.
+#
+#Actually a new project itself. Originally, the IBM proprietary service processor would boot the CPU with these hardware procedures.
+#Organisational challenges just doing that.
+#
+# The enterprise products were what was making *all* of the money. Don't break them - they're likely your bank.
+#
+#
+# So.. it turns out when you publish a large chunk of low level code,
+
+-- [enterprisetech-oss.png] [duration=24.414803]
+
+# gets you press coverage
+# and sharing that source earlier on helped highly competent teams such as the ones at google get their machine running.
+
+-- [occ-announce.png] [duration=64.979126]
+
+# Opening everything up actually happened gradually.
+#
+# Some teams constantly mirror repository. Others maintain on GH.
+#
+# Transforming inside development into outside development was always
+# going to take time. That's still a challenge, converting mindsets
+# to open source dev models.
+#
+# Publishing is one thing that doesn't *have* to be synchronized.
+#
+
+-- [ami-announce.png] [duration=59.719257]
+
+# Initially, have to use proprietary BMCs. Simply no other option.
+# they run linux, but with a proprietary firmware stack.
+#
+#Competition always good, anyone welcome.
+#
+#OpenBMC was to come later.
+#
+# but this was enough....
+
+-- [tyan-press.png] [duration=13.610485]
+
+# to enable others to ship machines!
+# well, a dev board
+
+-- [tyan-openpower2015.png] [duration=19.625547]
+
+# and later, commercial machines!
+
+-- [text-align=left] [duration=138.315521]
+Timeline:
+• June 2014:		Initial POWER8 system
+• October 2014:	Tyan Reference POWER8 system
+• December 2014:	All code up on GitHub
+• March 2015:		op-build v1.0 tagged
+• April 2015:		Tyan shows commercial POWER8 system
+• October 2015:	IBM ships first OpenPOWER systems
+# Largely all IBM team, working closely with some others.
+# Nothing *too* unusual for a product. We had bugs, we fixed them.
+# We had good and bad PMs, engineers, workflows, processes.
+# But something left the building and it wasn't Elvis.
+#
+# Note the short gap between all code up and v1.0.
+# Note short gap between code up and product shipping.
+# All of this is the *start* of some change, not the be all and end all.
+#How many projects have you seen git-push and then fizzle?
+#
+# here, I'm going to take a detour into something from the
+# reading assignment I'm going to give you at the end.
+
+-- [text-align=left] [duration=148.469147]
+Eight Steps:
+
+1. Establish Urgency
+2. Create Guiding Coalition
+3. Develop Vision and Strategy
+4. Communicate Change Vision
+5. Empower Employees for Broad-Based Action
+6. Generate Short Term Wins
+7. Consolidate Gains and produce more change
+8. Anchoring new approaches in culture
+
+
+    - from <b>Leading Change</b> <i>by John P. Kotter</i>
+# To have *long lasting* org change, you need to go through eight steps.
+# and so far in our story, we've been doing that (sometimes conciously).
+# You can fail at steps and hurt the chance of success.
+#
+# It turns out there's *research* on this kind of thing.
+#
+# Also,
+
+-- [text-align=left] [duration=72.383362]
+The Five Dysfunctions of a team:
+
+1. Absence of Trust
+2. Fear of Conflict
+3. Lack of Commitment
+4. Avoidance of Accountability
+5. Inattention to Results.
+
+<span font="30px">
+ - <b>The Five Dysfunctions of a Team: A Leadership Fable</b>
+    by <i>Patrick M. Lencioni</i>
+</span>
+# Teams can also be dysfunctional. Sometimes you have to repair the team
+#before you can start fixing other things.
+#
+#Sorry, not before, concurrently with fixing other things.
+#
+# Team doesn't trust one another.
+# Team won't discuss contentious issues.
+# Team isn't committed.
+# Not accountable
+# Don't care about results.
+#
+# So....
+
+-- [duration=22.328356]
+🚢ing is only the start
+
+-- [text-align=left] [duration=37.812122]
+☑ Ship it again!
+☑ Have other people ship it.
+☑ Healthy development community
+☑ ...
+☑ Profit!
+# our todo list looked like...
+#
+# We want people to be able to build machines, customize firmware
+# and make it easy for partners to get as involved as they want/need.
+# So... what issues did we encounter?
+
+-- [duration=113.898651]
+Bug Trackers
+# A challenge for anyone starting a project, while also going to produce
+#product based off it.
+# LTC uses Bugzilla (internally)
+# PFW uses ClearQuest (internal)
+# GitHub has GitHub (internal and external)
+# Each system vedor we we're partnering with, own github issue tracker.
+# Every partner has their own thing (private)
+#
+# At least 4 we have to care about at any one time.
+#"solve" this with bridges and...
+#
+# On CQ: Bugzilla is the absolute height of bug tracker design and implementation.
+
+-- [bugzilla-perf.png] [duration=118.032646]
+
+#Side Quest:
+#  Bugzilla Performance
+#
+# Same eight steps for larger change:
+# Urgency: we need it to help ship product
+# Coalition: big bugzilla users
+# Vision/Strategy: Faster page loads.
+# Communicate
+# Empower Employees for Broad-Based Action: need to involve others, management to get new machines, cloud, etc etc.
+# Generate Short Term Wins: reconfigure mysql
+# Consolidate Gains and produce more change: benchmark and report!
+# Anchoring new approaches in culture
+
+-- [duration=72.701416]
+💟 your bug tracker
+# Bugs DB provides metrics
+# Software development lacks metrics
+# Management can see bug counts and severity.
+#
+# I've been in more meetings with bug charts than... many things.
+#
+# keep track of things. It makes you look competent and on top of things.
+# This wins allies from management.
+#
+
+-- [bug-bridge.png] [duration=35.745510]
+
+# Side Quest: Bug Bridges
+# For reasons that escape me, it's too hard for someone to learn to use BZ
+# So... software to sync. Not 1-1 mapping. Not always reliable.
+#
+# For some of our machines, we were integrating into an existing product,
+# so their rules are the rules. Trying to change that won't help.
+#
+# Internal vs External.
+# Ongoing challenge.
+
+-- [duration=58.701488]
+There's no substitute for knowing what the 🚒 is going on.
+# Slightly paraphrased from how I usually say it.
+# Any idiot can print a list of bugs and track the count.
+# Competence is required to *understand* that and the implications of shipping a product.
+#
+# The firetruck here is about fires. Know what the real ones are.
+#
+# Knowledgable communication out through hierarchy is *important*.
+#Communicating up through management is a skill, and can be *very* valuable
+#to learn how to do it. It helps when you need to build a coaltion for change.
+
+-- [duration=24.571259]
+Putting together a team for change
+# Something as simple as "make bugzilla go faster" or "increase availability"
+# can be a micro effort of larger change, and a good way to get good at doing it.
+#Build institutional knowledge of leading change!
+
+-- [text-align=left] [duration=30.409418]
+You need:
+1. Position Power
+2. Expertise
+3. Credibility
+4. Leadership
+# Position power is enough key players/management to ensure it's hard to block change.
+# Expertise: experts relevant to the task at hand.
+# Credibility: people with good reputations so their pronouncements taken seriously
+# Leadership: Need people to drive it.
+# Need both management and leadership skills.
+
+-- [duration=28.297621]
+Leadership != Management
+# They are two *completely* different things.
+# leaders are different than managers.
+# Leaders come up with Vision. Managers plan, budget, ensure it's implemented.
+# Never underestimate the importance of both.
+
+-- [duration=41.632927]
+On non-ideal people.....
+#You don't need to involve them.
+#You can assemble a *good* small team to drive change
+#This is, in fact, critical.
+#There's going to be people you don't like, who aren't going to be on your
+#greeting card list. That's okay.
+
+-- [duration=51.733326]
+Upstream vs Product
+#Another one of our challenges.
+#
+# Focus on product is good.
+# We got it out the door.
+#
+# We need to develop a community, and support *many* products.
+#Community both inside and outside the company.
+#Break down silos.
+#
+# Upstreaming makes products easier
+
+-- [text-align=left] [duration=42.206539]
+Vision:
+• Upstream first.
+• Upstream always works.
+• Good Open Source Citizens
+• Release at any time.
+• Short lived forks for releases.
+• IBM no different than others.
+# upstream first: for our code and others
+# Works (testing)
+# Release any time (i.e. test it, don't merge crap)
+# Short lived small branches for products is good.
+# Allow others to ship like we do.
+
+-- [duration=50.445423]
+CI and Testing
+#Naturally, a challenge.
+#another area where we had to apply the magic change formula.
+#A *lot* of management *product* focus, little on efficiencies to
+#make the *next* lot of testing smoother.
+#JFDI
+
+-- [duration=79.180969]
+Communicate
+# Up, down, sideways.
+#Things to reduce release+test effort win people over!
+#
+#Not *breaking* things is good. Offer an improvement.
+#
+#We have many people who care about shipping quality products.
+#They have done this over years. Sometimes decades.
+#A lot of them have zero open source experience.
+#Never be afraid of sitting down and talking.
+#See things from somebody else's point of view.
+#Sometimes f2f works best.
+
+-- [duration=11.172941]
+Empower Employees for broad-based action
+#This *can* require management support.
+#Or... skunkworks.
+#But simply having technical leaders help empower others works!
+
+-- [duration=101.392776]
+Want a short term win?
+
+Tag a release!
+# Short term wins? TAG A RELEASE!
+#
+#Communicating out achievements is *good*. kudos works *great*.
+#Never underestimate thanking someone!
+#I would use gitdm to point out who was doing work, use corp awards.
+#Monetary value isn't needed, acknowledgement is good.
+#Good evidence to help good people get promoted, payrises.
+#
+#Once used to continuous delivery, releases, can be hard to *remember*
+#how much progress you've made. Be sure to look back.
+#
+#Been moderately successful. Constant tweaking... bribing people for code review
+
+-- [duration=46.128178]
+Consolidate Gains and produce more change
+# Well done, everybody take a well deserved break!
+#
+# That doesn't work. It doesn't help and can *regress* change.
+#A critical time is after initial wins.
+#Look as to "what's next?"
+#
+
+-- [duration=82.024590]
+Drive more change
+#Use that coalition to drive further change. It just earned a whole
+#bunch of credibility with all these achievements.
+#
+#For us: shipping GA1, subsequent products. Getting bugs fixed and
+#lots of work preparing for next processor.
+#Lots of things to do to clean-up, make things work better.
+#
+#Be sustainable. Don't burn people out.
+#Get management support to ensure that.
+#
+# But this is the time for *more* not less change.
+
+-- [duration=82.610756]
+Anchoring New Approaches in Culture
+#Culture is more ingrained than behaviour.
+#Culture is often invisible.
+#This is difficult.
+#
+#Respect old way of doing things. It was done *FOR A REASON*
+#That reason may no longer be relevant.
+#Provide evidence of improvement.
+#
+#Sometimes the only way to change is with turnover. This is okay.
+
+-- [text-align=left] [duration=64.467781]
+Things that aren't fixed:
+• FOSS focused development everywhere
+• Being <b>really</b> good at regular upstream releases
+• Bug tracking software that doesn't suck.
+• RFC Compliant email
+• Adequate Documentation/Testing resources
+• Conformance testing &amp; specification
+
+-- [duration=1.911813]
+In summary...
+
+-- [duration=13.549905]
+Software problems are easy.
+# You know how to debug software.
+# You know how to work out which network cable was unplugged...
+
+-- [duration=3.747069]
+Hardware problems are "easy".
+# (I'm more of a software guy)... soo...
+# percussive maintenance fixes everything.
+
+-- [duration=23.735048]
+Human problems are hard.
+#WHERE COUNT(HUMANS) >= 1
+# getting yourself to do something is one thing
+# getting two people to do something is another
+#
+# All the real issues are human related.
+
+-- [duration=4.319579]
+Be pragmatic
+# You can't fix absolutely everything in the world.
+# Certainly not all at once.
+
+-- [duration=4.171146]
+Real, fundamental change takes time.
+
+<span></span>
+
+-- [duration=1.308091]
+Real, fundamental change takes time.
+
+(but is totally worth it)
+
+-- [duration=2.169156]
+Questions?
+
+-- [text-align=left] [duration=3.377014]
+Reading List:
+
+• <b>The Five Dysfunctions of a Team: A Leadership Fable</b>
+   <i>Patrick M. Lencioni</i>
+• <b>Leading Change</b>
+   <i>John P. Kotter</i>
+• <b>Who Says Elephants Can't Dance?</b>
+   <i>Louis V. Gerstner Jr.</i>
+• <b>Nonviolent Communication: A language of Life</b>
+   <i>Marshall B. Rosenberg and Arun Gandhi</i>
+
+--
+Thank you.
