@@ -3,6 +3,8 @@ Organizational Change: Challenges in shipping open source firmware
 
 https://linux.conf.au/schedule/presentation/66/
 
+Youtube recording: https://youtu.be/JngZkC-TVHc
+
 Presented by Stewart Smith
 Wednesday 2:15 p.m.–3 p.m.
 Target audience: Developer 
